@@ -18,6 +18,7 @@ using System.Runtime.Remoting.Channels;
 
 namespace CASSIE_Maker
 {
+    // Class of Phoneme
     public class Phoneme
     {
         public string name;
@@ -25,6 +26,7 @@ namespace CASSIE_Maker
         public string location;
         public TimeSpan duration;
 
+        // Creates Phoneme object and loads its sound 
         public Phoneme(string name, string location)
         {
             this.name = name;
@@ -38,6 +40,7 @@ namespace CASSIE_Maker
             waveFileReader.Dispose();
         }
 
+        // Plays assigned sound
         public void Play()
         {
             this.soundPlayer.Play();
@@ -53,6 +56,7 @@ namespace CASSIE_Maker
             InitializeComponent();
         }
 
+        // Loads all needed things
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -88,14 +92,18 @@ namespace CASSIE_Maker
                 
         }
 
+        // Plays sentence from text box
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            // Take text from text box and prepare it for breaking up to words
             string text = richTextBox1.Text.Trim().Replace('\n',' ');
             string[] meaningParts = text.Split(' ');
+            // Break up text to words
             meaningParts = meaningParts.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            // Start new task, which plays the sentence
             Task playSentence = Task.Factory.StartNew(() =>
             {
+                // Play every word separetly, one after another
                 foreach (string part in meaningParts)
                 {
                     if (part.Trim().Length <= 0)
@@ -108,13 +116,15 @@ namespace CASSIE_Maker
             
         }
 
-
+        // Plays word from dictionary
         private void word_player(string word)
         {
+            // Check if word is in dictionary
             string[] phonemesNames;
             if (!dictionary.TryGetValue(word, out phonemesNames))
                 return;
 
+            // Play phonemes of the word and wait for duration of the phoneme
             for (int i = 0; i < phonemesNames.Length; i++)
             {
                 phonemesSounds[phonemesNames[i]].Play();
@@ -124,6 +134,7 @@ namespace CASSIE_Maker
 
         private void load_phonemes_sounds()
         {
+            // Array of all phonemes names
             string[] phonemesNames = new string[]
             {
                 "AA",
@@ -167,6 +178,7 @@ namespace CASSIE_Maker
                 "ZH"
             };
 
+            // Creates dictionary of phoneme names and assigns to them Phoneme objects
             foreach(string phonemeName in phonemesNames)
             {
                 string location = @"D:\\!Downloads\\SCP_SL-20221206T161301Z-001\\Words_Numbers_Letters\\Phonemes_CMU\\" + phonemeName + ".wav";
